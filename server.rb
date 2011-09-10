@@ -41,11 +41,12 @@ class SocketServer
       mem = Member.new(s, name)
       add_connection(mem)
       show_connection
-      show_team
+      # show_team
 
       while str = s.gets
         str.chomp!
         if /^teamdiv$/ =~ str
+          team_div
           show_team
         else
           send_message(name, str)
@@ -71,13 +72,13 @@ class SocketServer
   def add_connection(mem)
     @connect.push mem
     puts "#{mem.name} connected."
-    send_all "#{mem.name} connected."
+    # send_all "#{mem.name} connected."
   end
 
   def delete_connection(mem)
     @connect.delete mem
     puts "#{mem.name} disconnected."
-    send_all "#{mem.name} disconnected."
+    # send_all "#{mem.name} disconnected."
     if @connect.size == 0
       exit
     end
@@ -85,9 +86,8 @@ class SocketServer
 
   def show_connection
     p @connect
-    send_all "-----Members-----"
+    send_all "MEMBERS"
     send_all @connect.map{|mem| mem.name}
-    send_all "-----------------"
   end
 
   def show_team
