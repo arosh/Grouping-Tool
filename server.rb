@@ -5,11 +5,10 @@ Thread.abort_on_exception
 
 class Member
   attr_reader :name
-  attr_accessor :ready, :team
+  attr_accessor :team
   def initialize(sock, name)
     @sock = sock
     @name = name
-    @ready = false
     @team = 0
   end
 
@@ -46,13 +45,8 @@ class SocketServer
 
       while str = s.gets
         str.chomp!
-        if /^ready$/ =~ str
-          mem.ready = true
-          send_all "# #{mem.name} is ready."
-        elsif /^teamdiv$/ =~ str
-          if team_div
-            show_team
-          end
+        if /^teamdiv$/ =~ str
+          show_team
         else
           send_message(name, str)
         end
@@ -104,35 +98,14 @@ class SocketServer
     send_all "----------------"
   end
 
-  def send_non_ready_member
-    @connect.select{|mem| mem.ready == false}.each do |mem|
-      send_all "# #{mem.name} isn't ready."
-    end
-  end
-
-  def set_ready_to_false
-    @connect.each do |mem|
-      mem.ready = false
-    end
-  end
-
   def team_div
-    if @connect.find{|mem| mem.ready == false}
-      send_non_ready_member
-      return false
-    end
-
     arr = member_shuffle
     arr[0].each do |mem|
-      @connect[@connect.index(mem)].team = 1
+      mem.team = 1
     end
     arr[1].each do |mem|
-      @connect[@connect.index(mem)].team = 2
+      mem.team = 2
     end
-
-    set_ready_to_false
-
-    return true
   end
 
   def member_shuffle
