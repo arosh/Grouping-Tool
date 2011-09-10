@@ -1,4 +1,12 @@
 #!/usr/bin/env ruby
+#
+# =SocketServerのテスト用クラス。
+# Author::arosh
+#
+# 実際にはサーバー側をRuby、クライアント側をAdobe Flexで行う予定だが、
+# テスト用に用意した。
+# チャット機能を本当に実装するかどうかは不明。
+#
 require "socket"
 
 Thread.abort_on_exception

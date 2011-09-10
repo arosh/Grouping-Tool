@@ -1,4 +1,8 @@
 #!/usr/bin/env ruby
+#
+# =チーム分けサーバーの本体となるクラス
+# Author::arosh
+#
 require "socket"
 
 Thread.abort_on_exception
