@@ -47,7 +47,6 @@ class SocketServer
         str.chomp!
         if /^teamdiv$/ =~ str
           team_div
-          show_team
         else
           send_message(name, str)
         end
@@ -86,38 +85,61 @@ class SocketServer
 
   def show_connection
     p @connect
-    send_all "MEMBERS"
-    send_all @connect.map{|mem| mem.name}
+    send_string = ""
+    send_string << "MEMBERS" + "\n"
+
+    @connect.each do |mem|
+      send_string << mem.name + "\n"
+    end
+
+    send_all(send_string)
   end
 
-  def show_team
-    send_all "-----Team A-----"
-    send_all @connect.select{|mem| mem.team == 1}.map{|mem| mem.name}
-    send_all "-----Team B-----"
-    send_all @connect.select{|mem| mem.team == 2}.map{|mem| mem.name}
-    send_all "----------------"
+  def show_team(arr)
+    send_string = ""
+
+    send_string << "-----Team A-----" + "\n"
+    arr[0].each do |mem|
+      send_string << mem.name + "\n"
+    end
+
+    send_string << "-----Team B-----" + "\n"
+    arr[1].each do |mem|
+      send_string << mem.name + "\n"
+    end
+
+    send_string << "----------------"
+
+    send_all(send_string)
   end
 
   def team_div
     arr = member_shuffle
+
     arr[0].each do |mem|
       mem.team = 1
+
     end
+
     arr[1].each do |mem|
       mem.team = 2
     end
+
+    show_team(arr)
   end
 
   def member_shuffle
     size = @connect.size
     team_a = []
     team_b = []
-    # ceil ... (A + B + 1) / B
+    # ceil ... (A + B - 1) / B
     size_a = (size + 2 - 1) / 2
     size_b = size / 2
     que = @connect.shuffle
+
     size.times do
       sum = size_a + size_b
+
       if rand <= size_a / sum.to_f
         team_a.push que.pop
         size_a -= 1
