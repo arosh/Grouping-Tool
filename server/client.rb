@@ -12,7 +12,7 @@ require "socket"
 Thread.abort_on_exception
 
 class SocketClient
-  def initialize(name, port = 4444, host = "localhost")
+  def initialize(name, port = 7650, host = "localhost")
     @name = name
     @port = port
     @host = host

@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 #
-# =チーム分けサーバーの本体となるクラス
-# Author::arosh
+# = チーム分けサーバーの本体となるクラス
+# Author:: arosh
 #
 require "socket"
 
@@ -22,7 +22,7 @@ class Member
 end
 
 class SocketServer
-  def initialize(port = 4444)
+  def initialize(port = 7650)
     @port = port
     @connect ||= []
   end
@@ -90,29 +90,29 @@ class SocketServer
   def show_connection
     p @connect
     send_string = ""
-    send_string << "MEMBERS" + "\n"
+    send_string << "MEMBERS" 
 
     @connect.each do |mem|
-      send_string << mem.name + "\n"
+      send_string << "\n" + mem.name
     end
 
     send_all(send_string)
   end
 
   def show_team(arr)
-    send_string = ""
+    send_string = "TEAMDIV\n"
 
-    send_string << "-----Team A-----" + "\n"
+    # send_string << "-----Team A-----" + "\n"
     arr[0].each do |mem|
-      send_string << mem.name + "\n"
+      send_string << mem.name + " A\n"
     end
 
-    send_string << "-----Team B-----" + "\n"
+    # send_string << "-----Team B-----" + "\n"
     arr[1].each do |mem|
-      send_string << mem.name + "\n"
+      send_string << mem.name + " B\n"
     end
 
-    send_string << "----------------"
+    # send_string << "----------------"
 
     send_all(send_string)
   end

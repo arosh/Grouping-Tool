@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:ns1="*" width="752" height="408" creationComplete="creationCompleteHandler(event)" viewSourceURL="srcview/index.html">
+	<fx:Declarations>
+		<!-- 非ビジュアルエレメント (サービス、値オブジェクトなど) をここに配置 -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
+			
+			[Bindable]
+			private var DGdata:ArrayCollection;
+			
+			private var sock:Socket;
+			private var my_name:String;
+			
+			private function creationCompleteHandler(event:FlexEvent):void
+			{
+				sock = new Socket();
+				sock.addEventListener(Event.CONNECT, socketConnectHandler);
+				sock.addEventListener(ProgressEvent.SOCKET_DATA, socketDataHandler);
+				button_connect.enabled = true;
+				player_name.enabled = true
+				DGdata = new ArrayCollection();
+			}
+			
+			private function button_connect_clickHandler(event:MouseEvent):void
+			{
+				sock.connect(host_name.text, int(port_number.text));
+			}
+			
+			private function socketConnectHandler(event:Event):void {
+				button_connect.enabled = false;
+				player_name.enabled = false;
+				host_name.enabled = false;
+				port_number.enabled = false;
+				my_name = player_name.text;
+				send_message(my_name);
+			}
+			
+			private function socketDataHandler(event:ProgressEvent):void {
+				var str:String = sock.readUTFBytes(sock.bytesAvailable);
+				if(/^MEMBERS\n/.test(str)) {
+					var rows:Array = str.split("\n");
+					rows.pop(); // 最後の改行を削除。
+					rows.shift(); // 最初の行 MEMBERS を削除。
+					
+					DGdata.removeAll();
+					for each(var s:String in rows) {
+						DGdata.addItem({name:s, team:"null"});
+					}
+				} else if(str.match(/^TEAMDIV\n/)) {
+					rows = str.split("\n");
+					rows.pop();
+					rows.shift();
+					
+					DGdata.removeAll();
+					for each(s in rows) {
+						var arr:Array = s.split(/ /);
+						var name:String = arr[0];
+						var team:String = arr[1];
+						DGdata.addItem({name:name, team:team});
+					}
+					
+				}
+			}
+			
+			private function button_div_clickHandler(event:MouseEvent):void {
+				send_message("teamdiv");
+			}
+			
+			private function button_exit_clickHandler(event:MouseEvent):void {
+				if(sock.connected) {
+					sock.close();
+					button_connect.enabled = true;
+					player_name.enabled = true;
+					host_name.enabled = true;
+					port_number.enabled = true;
+				}
+			}
+			
+			private function send_message(str:String):void {
+				if(sock.connected) {
+					sock.writeUTFBytes(str + "\n");
+					sock.flush();
+				}
+			}
+		]]>
+	</fx:Script>
+	
+	<s:TextInput x="50" y="50.25" width="219" id="player_name"/>
+	<s:Label x="10" y="49" text="名前" width="32" height="22" fontFamily="ＭＳ ゴシック" fontSize="14" verticalAlign="middle"/>
+	<s:Button x="277" y="49.15" label="接続" fontFamily="ＭＳ ゴシック" id="button_connect" click="button_connect_clickHandler(event)"/>
+	<mx:DataGrid x="10" y="107" width="415" height="231" editable="false" id="team_member" dataProvider="{DGdata}">
+		<mx:columns>
+			<mx:DataGridColumn headerText="名前" dataField="name"/>
+			<mx:DataGridColumn headerText="チーム" dataField="team" itemRenderer="CustomComp" width="100"/>
+		</mx:columns>
+	</mx:DataGrid>
+	<s:Button x="345" y="77" label="チーム分け" fontFamily="ＭＳ ゴシック" click="button_div_clickHandler(event)" id="button_div"/>
+	<s:Button x="355" y="49.15" label="抜ける" fontFamily="ＭＳ ゴシック" id="button_exit" click="button_exit_clickHandler(event)"/>
+	<s:TextInput x="60" y="7" text="shora.dip.jp" id="host_name" fontFamily="ＭＳ ゴシック"/>
+	<s:Label x="10" y="10" text="接続先" fontFamily="ＭＳ ゴシック" verticalAlign="bottom" fontSize="14"/>
+	<s:Label x="211" y="10" text="ポート" fontFamily="ＭＳ ゴシック" fontSize="14" verticalAlign="middle"/>
+	<s:TextInput x="261" y="7" width="40" text="7650" id="port_number"/>
+</s:Application>
