@@ -26,7 +26,7 @@ class SocketClient
   end
 
   def start
-    open {|sock|
+    open do
       send(@name)
 
       Thread.start do
@@ -34,7 +34,7 @@ class SocketClient
       end
 
       get_message
-    }
+    end
   end
 
   def send(str)

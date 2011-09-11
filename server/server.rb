@@ -25,39 +25,37 @@ end
 class SocketServer
   def initialize(port = 7650)
     @port = port
-    @connect ||= []
+    @connect = []
   end
 
-  def open
+  def open(s)
+    name = s.gets.chomp
+    mem = Member.new(s, name)
+    add_connection(mem)
+    show_connection
+
+    while str = s.gets
+      str.chomp!
+      if /^teamdiv$/ =~ str
+        team_div
+      else
+        send_message(name, str)
+      end
+    end
+
+    delete_connection mem
+    show_connection
+  end
+
+  def start
     TCPServer.open(@port) {|gs|
       puts "Chat Server was started in port #{@port}."
 
       while true
         Thread.start(gs.accept) {|s|
-          yield(s)
+          open(s)
         }
       end
-    }
-  end
-
-  def start
-    open {|s|
-      name = s.gets.chomp
-      mem = Member.new(s, name)
-      add_connection(mem)
-      show_connection
-
-      while str = s.gets
-        str.chomp!
-        if /^teamdiv$/ =~ str
-          team_div
-        else
-          send_message(name, str)
-        end
-      end
-
-      delete_connection mem
-      show_connection
     }
   end
 
@@ -151,6 +149,5 @@ class SocketServer
   end
 end
 
-server = SocketServer.new
-server.start
+SocketServer.new.start
 
