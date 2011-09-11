@@ -12,3 +12,5 @@
 
 実はnode.js + socket.IOを利用してみたかったのですが、私がjava scriptを使ったことがないため断念しました。
 
+![スクリーンショット](screen_shot.png "screen_shot")
+
