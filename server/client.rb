@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 #
-# =SocketServerのテスト用クラス。
-# Author::arosh
+# = SocketServerのテスト用クラス
+# Author:: arosh
 #
 # 実際にはサーバー側をRuby、クライアント側をAdobe Flexで行う予定だが、
 # テスト用に用意した。
@@ -9,7 +9,7 @@
 #
 require "socket"
 
-Thread.abort_on_exception
+Thread.abort_on_exception = true
 
 class SocketClient
   def initialize(name, port = 7650, host = "localhost")

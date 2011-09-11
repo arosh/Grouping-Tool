@@ -63,7 +63,6 @@
 						var team:String = arr[1];
 						DGdata.addItem({name:name, team:team});
 					}
-					
 				}
 			}
 			

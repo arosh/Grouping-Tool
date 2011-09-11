@@ -4,11 +4,9 @@
 # Author:: arosh
 #
 require "socket"
-require "./policy.rb"
 
 AUTO_EXIT = false
-
-Thread.abort_on_exception
+Thread.abort_on_exception = true
 
 class Member
   attr_reader :name
@@ -48,7 +46,6 @@ class SocketServer
       mem = Member.new(s, name)
       add_connection(mem)
       show_connection
-      # show_team
 
       while str = s.gets
         str.chomp!
@@ -76,15 +73,14 @@ class SocketServer
   end
 
   def add_connection(mem)
-    @connect.push mem
+    @connect << mem
     puts "#{mem.name} connected."
-    # send_all "#{mem.name} connected."
   end
 
   def delete_connection(mem)
     @connect.delete mem
     puts "#{mem.name} disconnected."
-    # send_all "#{mem.name} disconnected."
+
     if AUTO_EXIT && @connect.size == 0
       exit
     end
@@ -92,30 +88,25 @@ class SocketServer
 
   def show_connection
     p @connect
-    send_string = ""
-    send_string << "MEMBERS" 
+    send_string = "MEMBERS" 
 
     @connect.each do |mem|
-      send_string << "\n" + mem.name
+      send_string << "\n #{mem.name}"
     end
 
     send_all(send_string)
   end
 
   def show_team(arr)
-    send_string = "TEAMDIV\n"
+    send_string = "TEAMDIV"
 
-    # send_string << "-----Team A-----" + "\n"
     arr[0].each do |mem|
-      send_string << mem.name + " A\n"
+      send_string << "\n #{mem.name} A"
     end
 
-    # send_string << "-----Team B-----" + "\n"
     arr[1].each do |mem|
-      send_string << mem.name + " B\n"
+      send_string << "\n #{mem.name} B"
     end
-
-    # send_string << "----------------"
 
     send_all(send_string)
   end
@@ -148,21 +139,16 @@ class SocketServer
       sum = size_a + size_b
 
       if rand <= size_a / sum.to_f
-        team_a.push que.pop
+        team_a << que.pop
         size_a -= 1
       else
-        team_b.push que.pop
+        team_b << que.pop
         size_b -= 1
       end
     end
 
     [team_a, team_b]
   end
-end
-
-Thread.start do
-  policy = PolicyFileServer.new
-  policy.start
 end
 
 server = SocketServer.new
