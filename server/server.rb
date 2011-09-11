@@ -4,6 +4,9 @@
 # Author:: arosh
 #
 require "socket"
+require "./policy.rb"
+
+AUTO_EXIT = false
 
 Thread.abort_on_exception
 
@@ -82,7 +85,7 @@ class SocketServer
     @connect.delete mem
     puts "#{mem.name} disconnected."
     # send_all "#{mem.name} disconnected."
-    if @connect.size == 0
+    if AUTO_EXIT && @connect.size == 0
       exit
     end
   end
@@ -155,6 +158,11 @@ class SocketServer
 
     [team_a, team_b]
   end
+end
+
+Thread.start do
+  policy = PolicyFileServer.new
+  policy.start
 end
 
 server = SocketServer.new
