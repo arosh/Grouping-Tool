@@ -36,7 +36,7 @@ class SocketServer
 
     while str = s.gets
       str.chomp!
-      if /^teamdiv$/ =~ str
+      if /^group$/ =~ str
         team_div
       else
         send_message(name, str)
@@ -89,21 +89,21 @@ class SocketServer
     send_string = "MEMBERS" 
 
     @connect.each do |mem|
-      send_string << "\n #{mem.name}"
+      send_string << "\n#{mem.name}"
     end
 
     send_all(send_string)
   end
 
   def show_team(arr)
-    send_string = "TEAMDIV"
+    send_string = "GROUP"
 
     arr[0].each do |mem|
-      send_string << "\n #{mem.name} A"
+      send_string << "\n#{mem.name} A"
     end
 
     arr[1].each do |mem|
-      send_string << "\n #{mem.name} B"
+      send_string << "\n#{mem.name} B"
     end
 
     send_all(send_string)
@@ -114,7 +114,6 @@ class SocketServer
 
     arr[0].each do |mem|
       mem.team = 1
-
     end
 
     arr[1].each do |mem|

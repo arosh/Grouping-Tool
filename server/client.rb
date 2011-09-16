@@ -18,15 +18,10 @@ class SocketClient
     @host = host
   end
 
-  def open
+  def start
     TCPSocket.open(@host, @port) {|sock|
       @sock = sock
-      yield
-    }
-  end
 
-  def start
-    open do
       send(@name)
 
       Thread.start do
@@ -34,7 +29,7 @@ class SocketClient
       end
 
       get_message
-    end
+    }
   end
 
   def send(str)
