@@ -20,12 +20,17 @@ class Member
   def send(str)
     @sock.puts str
   end
+
+  def inspect
+    "#<@name=\"#{name}\", @team=#{team}>"
+  end
 end
 
 class SocketServer
   def initialize(port = 7650)
     @port = port
     @connect = []
+    @mut = Mutex.new
   end
 
   def open(s)
@@ -65,32 +70,41 @@ class SocketServer
   end
 
   def send_all(str)
-    @connect.each do |mem|
-      mem.send(str)
-    end
+    @mut.synchronize {
+      @connect.each do |mem|
+        mem.send(str)
+      end
+    }
   end
 
   def add_connection(mem)
-    @connect << mem
-    puts "#{mem.name} connected."
+    @mut.synchronize {
+      @connect << mem
+      puts "#{mem.name} connected."
+    }
   end
 
   def delete_connection(mem)
-    @connect.delete mem
-    puts "#{mem.name} disconnected."
+    @mut.synchronize {
+      @connect.delete mem
+      puts "#{mem.name} disconnected."
 
-    if AUTO_EXIT && @connect.size == 0
-      exit
-    end
+      if AUTO_EXIT && @connect.size == 0
+        exit
+      end
+    }
   end
 
   def show_connection
-    p @connect
     send_string = "MEMBERS" 
 
-    @connect.each do |mem|
-      send_string << "\n#{mem.name}"
-    end
+    @mut.synchronize {
+      p @connect
+
+      @connect.each do |mem|
+        send_string << "\n#{mem.name}"
+      end
+    }
 
     send_all(send_string)
   end
@@ -124,13 +138,17 @@ class SocketServer
   end
 
   def member_shuffle
-    size = @connect.size
+    size = 0
+    que = []
+    @mut.synchronize {
+      size = @connect.size
+      que = @connect.shuffle
+    }
     team_a = []
     team_b = []
     # ceil ... (A + B - 1) / B
     size_a = (size + 2 - 1) / 2
     size_b = size / 2
-    que = @connect.shuffle
 
     size.times do
       sum = size_a + size_b
