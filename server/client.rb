@@ -38,7 +38,7 @@ class SocketClient
 
   def recieve
     while true
-      puts @sock.gets.chomp
+      p @sock.gets
     end
   end
 
