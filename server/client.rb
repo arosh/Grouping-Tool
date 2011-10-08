@@ -37,7 +37,7 @@ class SocketClient
   end
 
   def recieve
-    while true
+    loop do
       p @sock.gets
     end
   end

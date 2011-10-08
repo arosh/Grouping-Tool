@@ -54,9 +54,9 @@ class SocketServer
 
   def start
     TCPServer.open(@port) {|gs|
-      puts "Chat Server was started in port #{@port}."
+      puts "Grouping Server was started in port #{@port}."
 
-      while true
+      loop do
         Thread.start(gs.accept) {|s|
           open(s)
         }
