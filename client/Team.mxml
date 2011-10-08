@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
 			   xmlns:s="library://ns.adobe.com/flex/spark" 
-			   xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:ns1="*" width="752" height="408" creationComplete="creationCompleteHandler(event)" viewSourceURL="srcview/index.html">
+			   xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:ns1="*" width="752" height="408" creationComplete="creationCompleteHandler(event)">
 	<fx:Declarations>
 		<!-- 非ビジュアルエレメント (サービス、値オブジェクトなど) をここに配置 -->
 	</fx:Declarations>
@@ -51,7 +51,7 @@
 					for each(var s:String in rows) {
 						DGdata.addItem({name:s, team:"null"});
 					}
-				} else if(str.match(/^TEAMDIV\n/)) {
+				} else if(str.match(/^GROUP\n/)) {
 					rows = str.split("\n");
 					rows.pop();
 					rows.shift();
@@ -67,7 +67,7 @@
 			}
 			
 			private function button_div_clickHandler(event:MouseEvent):void {
-				send_message("teamdiv");
+				send_message("group");
 			}
 			
 			private function button_exit_clickHandler(event:MouseEvent):void {
@@ -89,19 +89,19 @@
 		]]>
 	</fx:Script>
 	
-	<s:TextInput x="50" y="50.25" width="219" id="player_name"/>
-	<s:Label x="10" y="49" text="名前" width="32" height="22" fontFamily="ＭＳ ゴシック" fontSize="14" verticalAlign="middle"/>
-	<s:Button x="277" y="49.15" label="接続" fontFamily="ＭＳ ゴシック" id="button_connect" click="button_connect_clickHandler(event)"/>
-	<mx:DataGrid x="10" y="107" width="415" height="231" editable="false" id="team_member" dataProvider="{DGdata}">
+	<s:TextInput x="50" y="50.25" width="219" id="player_name" fontFamily="Arial"/>
+	<s:Label x="10" y="49" text="名前" width="32" height="22" fontSize="14" verticalAlign="middle" fontFamily="ＭＳ ゴシック"/>
+	<s:Button x="277" y="49.15" label="接続" id="button_connect" click="button_connect_clickHandler(event)" fontFamily="ＭＳ ゴシック"/>
+	<mx:DataGrid x="10" y="107" width="415" height="231" editable="false" id="team_member" dataProvider="{DGdata}" fontFamily="Arial">
 		<mx:columns>
 			<mx:DataGridColumn headerText="名前" dataField="name"/>
 			<mx:DataGridColumn headerText="チーム" dataField="team" itemRenderer="CustomComp" width="100"/>
 		</mx:columns>
 	</mx:DataGrid>
-	<s:Button x="345" y="77" label="チーム分け" fontFamily="ＭＳ ゴシック" click="button_div_clickHandler(event)" id="button_div"/>
-	<s:Button x="355" y="49.15" label="抜ける" fontFamily="ＭＳ ゴシック" id="button_exit" click="button_exit_clickHandler(event)"/>
-	<s:TextInput x="60" y="7" text="shora.dip.jp" id="host_name" fontFamily="ＭＳ ゴシック"/>
-	<s:Label x="10" y="10" text="接続先" fontFamily="ＭＳ ゴシック" verticalAlign="bottom" fontSize="14"/>
-	<s:Label x="211" y="10" text="ポート" fontFamily="ＭＳ ゴシック" fontSize="14" verticalAlign="middle"/>
-	<s:TextInput x="261" y="7" width="40" text="7650" id="port_number"/>
+	<s:Button x="345" y="77" label="チーム分け" click="button_div_clickHandler(event)" id="button_div" fontFamily="ＭＳ ゴシック"/>
+	<s:Button x="355" y="49.15" label="抜ける" id="button_exit" click="button_exit_clickHandler(event)" fontFamily="ＭＳ ゴシック"/>
+	<s:TextInput x="60" y="7" text="shora.dip.jp" id="host_name" fontFamily="Arial"/>
+	<s:Label x="10" y="10" text="接続先" verticalAlign="bottom" fontSize="14" fontFamily="ＭＳ ゴシック"/>
+	<s:Label x="211" y="10" text="ポート" fontSize="14" verticalAlign="middle" fontFamily="ＭＳ ゴシック"/>
+	<s:TextInput x="261" y="7" width="40" text="7650" id="port_number" fontFamily="Arial"/>
 </s:Application>
