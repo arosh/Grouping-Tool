@@ -161,6 +161,8 @@ class SocketServer
         size_b -= 1
       end
     end
+    team_a = que[0, size_a]
+    team_b = que[size_a, size_b]
 
     [team_a, team_b]
   end
