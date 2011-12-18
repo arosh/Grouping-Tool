@@ -144,23 +144,13 @@ class SocketServer
       size = @connect.size
       que = @connect.shuffle
     }
-    team_a = []
-    team_b = []
+
     # ceil ... (A + B - 1) / B
     size_a = (size + 2 - 1) / 2
     size_b = size / 2
 
-    size.times do
-      sum = size_a + size_b
-
-      if rand <= size_a / sum.to_f
-        team_a << que.pop
-        size_a -= 1
-      else
-        team_b << que.pop
-        size_b -= 1
-      end
-    end
+    team_a = que[0, size_a]
+    team_b = que[size_a, size_b]
 
     [team_a, team_b]
   end
